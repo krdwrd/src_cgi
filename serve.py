@@ -11,9 +11,14 @@ corpus = fs.getfirst("corpus", "test")
 
 pages = krdwrd.get_pages(corpus)
 
+userpages = krdwrd.get_user_tagged(corpus, config.username)
+
+pages = set(pages) - set(userpages)
+
 if pages:
     page = random.sample(pages, 1)[0]
-    print "Location: %s/%s\n\n" % (config.srcurl(corpus), page)
+    loc = "%s/%s" % (config.srcurl(corpus), page)
 else:
-    print "Content-type: text/plain\n\nNo such corpus: %s" % corpus
+    loc = config.baseurl + 'bin/stat'
 
+print "Location: %s\n\n" % loc
