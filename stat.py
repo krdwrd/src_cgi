@@ -15,7 +15,12 @@ print """<div class="corpus"><h2>%s's KrdWrd Stats</h2>""" % config.username
 for corpus, pages in corpora.items():
     clen = len(krdwrd.get_pages(corpus))
     plen = pages and len(pages) or 0
-    print """<p><a href="#%s">%s</a> : """ % (corpus, corpus,)
+    per = clen and int(100.0 * float(plen) / clen) or 0
+    green = per * 2.55
+    red = 255 - per * 2.55
+    print """<p><div style="margin-right: 10px; width: 100px; border: 1px solid #000; float: left;">
+		        <div style="background-color: rgb(%d, %d, 0); width: %dpx; height: 20px;"></div></div>""" % (red, green, per)
+    print """<a href="#%s">%s</a> : """ % (corpus, corpus,)
     print plen
     print " of "
     print clen
