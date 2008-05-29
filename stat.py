@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import krdwrd
 import config
+import os
 
 corpora = dict((corpus, krdwrd.get_user_tagged(corpus, config.username)) \
                for corpus in config.corpora)
@@ -40,6 +41,11 @@ for corpus, pages in corpora.items():
       for i, page in reversed(list(enumerate(pages))):
         url = krdwrd.usertagurl(corpus, page, config.username)
         print """<li> <a href="%s">%03d</a>""" % (url, i) 
+        img = os.path.splitext(page)[0] + ".png"
+        fsi = os.path.join(config.srcdir(corpus), img)
+        if os.path.isfile(fsi):
+            url = os.path.join(config.srcurl(corpus), img)
+            print """ (<a href="%s">img</a>)""" % (url,)
       print "</ul>"
     else:
       print "no annotations"
