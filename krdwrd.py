@@ -3,13 +3,13 @@ import os
 
 def get_pages(corpus):
     if corpus and corpus in config.corpora:
-        return os.listdir(config.srcdir(corpus))
+        return [l for l in os.listdir(config.srcdir(corpus)) if l.endswith("html")]
 
 def get_user_tagged(corpus, user):
     if corpus and corpus in config.corpora:
         userd = userdir(corpus, user)
         if os.path.isdir(userd):
-            return os.listdir(userd)
+            return [l for l in os.listdir(userd) if l.endswith("html")]
 
 def parseurl(url):
     components = url.split('/')
