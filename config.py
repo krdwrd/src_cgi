@@ -4,8 +4,7 @@ cgitb.enable()
 import os.path as osp
 from os import environ
 
-umask = 0002
-os.umask(config.umask)
+os.umask(0002)
 
 username = environ.get("REMOTE_USER", '')
 
