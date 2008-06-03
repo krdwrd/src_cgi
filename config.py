@@ -4,6 +4,8 @@ cgitb.enable()
 import os.path as osp
 from os import environ
 
+umask = 0002
+
 username = environ.get("REMOTE_USER", '')
 
 baseurl = 'https://krdwrd.org/pages/'

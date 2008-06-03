@@ -17,6 +17,9 @@ def savepage(url, html):
 
     corpus, page = parsed
 
+    # set the umask
+    krdwrd.setumask()
+
     # build the target filename
     krdwrd.mkuserdir(corpus, config.username)
     of = krdwrd.tagtarget(corpus, page, config.username)

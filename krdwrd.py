@@ -34,3 +34,5 @@ def tagtarget(corpus, basepage, username):
 def usertagurl(corpus, fullpage, username):
     return os.path.join(config.tagurl(corpus), username, fullpage)
 
+def setumask():
+    os.umask(config.umask)
