@@ -13,7 +13,8 @@ pages = krdwrd.get_pages(corpus)
 
 userpages = krdwrd.get_user_tagged(corpus, config.username)
 
-pages = set(pages) - set(userpages and userpages or [])
+if pages:
+    pages = set(pages) - set(userpages and userpages or [])
 
 if pages:
     page = random.sample(pages, 1)[0]
