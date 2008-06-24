@@ -12,7 +12,7 @@ baseurl = 'https://krdwrd.org/pages/'
 
 basedir = '/srv/www/projects/krdwrd/pages/'
 
-corpora = ['test', 'ggaze', 'ceval']
+corpora = ['test', 'tutorial', 'ceval']
 
 def srcdir(corpus):
     return osp.join(basedir, 'dat', corpus, 'input')
