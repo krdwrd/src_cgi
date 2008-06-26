@@ -10,7 +10,19 @@ print "Content-type: text/html\n"
 
 print """<html><head><title>My KrdWrd Stats</title>
 <link rel="stylesheet" type="text/css" href="../krdwrd.css" />
-</head><body>"""
+<script type="text/javascript">
+function del_page(corpus, page)
+{
+    return confirm("Clear annotation for " + page + " from corpus " + corpus + "?");
+}
+function del_corpus(corpus)
+{
+    return confirm("Clear ALL your annotations from corpus " + corpus + "?");
+}
+</script>
+</head>
+<body>
+"""
 
 print """<div class="corpus"><h2>%s's KrdWrd Stats</h2>""" % config.username
 for corpus, pages in corpora.items():
@@ -35,18 +47,20 @@ for corpus, pages in corpora.items():
 print """</div>"""
 
 for corpus, pages in corpora.items():
-    print """<div class="corpus"><h3><a name="%s" />%s</h3>""" % (corpus, corpus,)
+    print """<div class="corpus"><h3><a name="%s"/>%s</h3>""" % (corpus, corpus)
     if pages:
       print "<ul>"
       for i, page in reversed(list(enumerate(pages))):
         url = krdwrd.usertagurl(corpus, page, config.username)
         print """<li> <a href="%s">%03d</a>""" % (url, i) 
+        print """ [<a href="" onclick="return del_page('%s', '%s');">del</a>]""" % (corpus, page)
         img = os.path.splitext(page)[0] + ".png"
         fsi = os.path.join(config.srcdir(corpus), img)
         if os.path.isfile(fsi):
             url = os.path.join(config.srcurl(corpus), img)
-            print """ (<a href="%s">img</a>)""" % (url,)
+            print """ [<a href="%s">img</a>]""" % (url,)
       print "</ul>"
+      print """[ <a href=""  onclick="return del_corpus('%s');">delete all annotations</a> ]""" % (corpus,  )
     else:
       print "no annotations"
     print "</div>"
