@@ -7,10 +7,7 @@ import tempfile
 
 def savepage(url, html):
     # try mapping the url to a (corpus, page) tuple
-    try:
-        parsed = krdwrd.parseurl(url)
-    except:
-        parsed = None
+    parsed = krdwrd.parseurl(url)
 
     if not parsed:
         return

@@ -12,6 +12,7 @@ def get_user_tagged(corpus, user):
             return [l for l in os.listdir(userd) if l.endswith("html")]
 
 def parseurl(url):
+  try:
     components = url.split('/')
     page = os.path.splitext(components[-1])[0]
     corpus = components[-3]
@@ -19,6 +20,8 @@ def parseurl(url):
         corpus = components[-4]
     if corpus in config.corpora:
         return (corpus, page)
+  except:
+    return None
 
 def userdir(corpus, username):
     return os.path.join(config.basedir, 'dat', corpus, 'tagged', username)
