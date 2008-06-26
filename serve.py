@@ -21,7 +21,7 @@ if pages:
     if serial:
         pages = pages or []
         if len(pages) > len(userpages):
-            page = pages[len(userpages)]
+            page = sorted(pages)[len(userpages)]
     else:
         pages = set(pages) - set(userpages)
         page = random.sample(pages, 1)[0]
