@@ -30,6 +30,11 @@ def mkuserdir(corpus, username):
     ud = userdir(corpus, username)
     if not os.path.isdir(ud):
         os.mkdir(ud)
+        # create .htaccess file to restrict access to one user
+        htfn = os.path.join(ud, '.htaccess')
+        f = file(htfn, 'w')
+        f.write('Require user %s' % username)
+        f.close()
 
 def tagtarget(corpus, basepage, username):
     return os.path.join(userdir(corpus, username), '%s.html' % (basepage))
