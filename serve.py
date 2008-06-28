@@ -2,33 +2,24 @@
 
 import random
 import cgi
-import krdwrd
+import kwdb
 import config
 
 fs = cgi.FieldStorage()
 
-corpus = fs.getfirst("corpus", "test")
+corpus = fs.getfirst("corpus", "tutorial")
+corpus_id = kwdb.get_corpus(corpus)
 
 serial = bool(fs.getfirst("serial"))
 
-pages = krdwrd.get_pages(corpus)
-
-userpages = krdwrd.get_user_tagged(corpus, config.username) or []
-
-page = None
+pages = kwdb.pages_left(corpus_id, config.user)
 
 if pages:
     if serial:
-        pages = pages or []
-        if len(pages) > len(userpages):
-            page = sorted(pages)[len(userpages)]
+        page = pages[0]
     else:
-        pages = set(pages) - set(userpages)
         page = random.sample(pages, 1)[0]
+    print "Location: %s/view/%s\n" % (config.baseurl, page, )
 
-if page:
-    loc = "%s/%s" % (config.srcurl(corpus), page)
 else:
-    loc = config.baseurl + 'bin/stat'
-
-print "Location: %s\n\n" % loc
+    print "Location: %s/stat\n" % (config.baseurl, )

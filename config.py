@@ -1,28 +1,18 @@
 import cgitb
 cgitb.enable()
 
-import os.path as osp
 from os import environ, umask
-
 umask(0002)
 
-username = environ.get("REMOTE_USER", '')
+import kwdb
 
-baseurl = 'https://krdwrd.org/pages/'
+baseurl = 'https://krdwrd.org/pages'
 
-basedir = '/srv/www/projects/krdwrd/pages/'
+path = environ.get("PATH_INFO", "/").strip('/')
 
-corpora = ['test', 'tutorial', 'ceval', 'canola']
+username = environ.get("REMOTE_USER")
+if not username:
+    raise Exception("Not logged in")
+user = kwdb.get_userid(username)
 
-def srcdir(corpus):
-    return osp.join(basedir, 'dat', corpus, 'input')
-
-def tagdir(corpus):
-    return osp.join(basedir, 'dat', corpus, 'tagged')
-
-def srcurl(corpus):
-    return osp.join(baseurl, 'dat', corpus, 'input')
-
-def tagurl(corpus):
-    return osp.join(baseurl, 'dat', corpus, 'tagged')
 
