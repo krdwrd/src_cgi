@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import kwdb
 import sys
 from codecs import open

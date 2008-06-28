@@ -1,3 +1,6 @@
+import sys, codecs
+sys.stdout = codecs.getwriter('utf8')(sys.stdout)
+
 import cgitb
 cgitb.enable()
 
@@ -6,7 +9,7 @@ umask(0002)
 
 import kwdb
 
-baseurl = 'https://krdwrd.org/pages'
+baseurl = 'https://krdwrd.org/pages/bin'
 
 path = environ.get("PATH_INFO", "/").strip('/')
 
