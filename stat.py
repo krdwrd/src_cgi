@@ -22,7 +22,7 @@ function del_corpus(corpus)
 <body>
 """
 
-print """<div class="corpus"><h2>%s's KrdWrd Stats</h2>""" % config.username
+print """<div class="corpus"><img src="../static/krdwrd.png" /><span class="head">%s's KrdWrd Stats</h2></span><br/>""" % config.username
 for corpus_id, corpus in corpora:
     all = kwdb.count_pages_corpus(corpus_id)
     done = kwdb.count_pages_done(corpus_id, config.user) 
@@ -46,19 +46,19 @@ for corpus_id, corpus in corpora:
 print """</div>"""
 
 for corpus_id, corpus in corpora:
-    print """<div class="corpus"><h3><a name="%s"/>%s</h3>""" % (corpus, corpus)
+    print """<div class="corpus"><a name="%s"></a><span class="shead">%s</span>""" % (corpus, corpus)
     pages = kwdb.pages_done(corpus_id, config.user)
     if pages:
+      print """(<a href="delcorpus/%d"  onclick="return del_corpus('%s');">delete all</a>) <br/>""" % (corpus_id, corpus,  )
       print "<ul>"
       for i, page_id in reversed(list(enumerate(pages))):
         fresh = "%s/view/%s\n" % (config.baseurl, page_id, )
         subm = "%s/subm/%s\n" % (config.baseurl, page_id, )
-        print """<li> %04d <a href="%s">fresh</a> <a href="%s">my annotation</a> """ % (i, fresh, subm) 
-        print """ [<a href="delpage/%d" onclick="return del_page('%s');">del</a>]""" % (page_id, i, )
+        print """<li> %04d  view: <a href="%s">original</a> <a href="%s">mine</a> """ % (i, fresh, subm) 
+        print """ (<a href="delpage/%d" onclick="return del_page('%s');">delete</a>)""" % (page_id, i, )
       print "</ul>"
-      print """[ <a href="delcorpus/%d"  onclick="return del_corpus('%s');">delete all annotations</a> ]""" % (corpus_id, corpus,  )
     else:
-      print "no annotations"
+      print "<br/>no annotations"
     print "</div>"
 
 print "</body></html>"

@@ -106,6 +106,11 @@ def count_pages_corpus(corpus_id):
 def add_submission(user_id, page_id, content):
     cursor.execute('INSERT INTO submissions (user_id, page_id, content) VALUES (?, ?, ?)', (user_id, page_id, content,))
 
+def get_subm_content(page_id, user_id):
+    cursor.execute('SELECT content FROM submissions WHERE page_id = ? AND user_id = ?', (page_id, user_id,))
+    return get_row("No such page: %s" % page_id)[0]
+
+
 def get_annotation(page_id):
     cursor.execute('SELECT tags FROM annotations WHERE page_id = ?', (page_id,))
     return get_row("No annotation for page: %s" % page_id)[0]
