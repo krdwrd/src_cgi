@@ -1,8 +1,11 @@
-import sqlite3
+try:
+    import sqlite3 as sqlite
+except ImportError:
+    from pysqlite2 import dbapi2 as sqlite
 
 KWDB = '/tmp/kw.db'
 
-db = sqlite3.connect(KWDB)
+db = sqlite.connect(KWDB)
 
 cursor = db.cursor()
 
