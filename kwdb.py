@@ -3,7 +3,7 @@ try:
 except ImportError:
     from pysqlite2 import dbapi2 as sqlite
 
-KWDB = '/tmp/kw.db'
+KWDB = '/home/projects/krdwrd/corpora.db'
 
 db = sqlite.connect(KWDB)
 
