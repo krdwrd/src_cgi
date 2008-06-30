@@ -116,6 +116,10 @@ def get_subm_content(page_id, user_id):
     cursor.execute('SELECT content FROM submissions WHERE page_id = ? AND user_id = ?', (page_id, user_id,))
     return get_row("No such page: %s" % page_id)[0]
 
+def get_all_submissions(page_id):
+    cursor.execute('SELECT content, user_id FROM submissions WHERE page_id = ?', (page_id,))
+    return cursor.fetchall()
+    
 
 def get_annotation(page_id):
     cursor.execute('SELECT tags FROM annotations WHERE page_id = ?', (page_id,))
