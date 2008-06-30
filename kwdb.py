@@ -3,7 +3,7 @@ try:
 except ImportError:
     from pysqlite2 import dbapi2 as sqlite
 
-KWDB = '/home/projects/krdwrd/corpora.db'
+KWDB = '/home/projects/krdwrd/db/corpora.db'
 
 db = sqlite.connect(KWDB)
 
@@ -96,8 +96,8 @@ def count_pages_done(corpus_id, user_id):
     return get_row("Error counting pages left")[0]
 
 def pages_done(corpus_id, user_id):
-    cursor.execute('SELECT page_id FROM submissions WHERE user_id = ? AND page_id in (SELECT id FROM pages WHERE corpus_id = ?) ORDER BY added', (user_id, corpus_id,))
-    return [i[0] for i in cursor.fetchall()]
+    cursor.execute('SELECT page_id, added FROM submissions WHERE user_id = ? AND page_id in (SELECT id FROM pages WHERE corpus_id = ?) ORDER BY added', (user_id, corpus_id,))
+    return cursor.fetchall()
 
 def count_pages_corpus(corpus_id):
     cursor.execute('SELECT COUNT(id) FROM pages WHERE corpus_id = ?', (corpus_id,))
@@ -105,6 +105,12 @@ def count_pages_corpus(corpus_id):
     
 def add_submission(user_id, page_id, content):
     cursor.execute('INSERT INTO submissions (user_id, page_id, content) VALUES (?, ?, ?)', (user_id, page_id, content,))
+
+def del_submission(user_id, page_id):
+    cursor.execute('DELETE FROM submissions WHERE user_id = ? AND page_id = ?', (user_id, page_id,))
+
+def del_all_submissions(user_id, corpus_id):
+    cursor.execute('DELETE FROM submissions WHERE user_id = ? AND page_id IN (SELECT id FROM pages WHERE corpus_id = ?)', (user_id, corpus_id,))
 
 def get_subm_content(page_id, user_id):
     cursor.execute('SELECT content FROM submissions WHERE page_id = ? AND user_id = ?', (page_id, user_id,))

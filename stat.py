@@ -51,11 +51,11 @@ for corpus_id, corpus in corpora:
     if pages:
       print """(<a href="delcorpus/%d"  onclick="return del_corpus('%s');">delete all</a>) <br/>""" % (corpus_id, corpus,  )
       print "<ul>"
-      for i, page_id in reversed(list(enumerate(pages))):
+      for page_id, added in reversed(pages):
         fresh = "%s/view/%s\n" % (config.baseurl, page_id, )
         subm = "%s/subm/%s\n" % (config.baseurl, page_id, )
-        print """<li> %04d  view: <a href="%s">original</a> <a href="%s">mine</a> """ % (i, fresh, subm) 
-        print """ (<a href="delpage/%d" onclick="return del_page('%s');">delete</a>)""" % (page_id, i, )
+        print """<li> %04d %s <a href="%s">original</a> <a href="%s">mine</a> """ % (page_id, added, fresh, subm) 
+        print """ (<a href="delpage/%d" onclick="return del_page('%s');">delete</a>)""" % (page_id, page_id, )
       print "</ul>"
     else:
       print "<br/>no annotations"
