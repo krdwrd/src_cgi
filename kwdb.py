@@ -123,10 +123,13 @@ def get_all_submissions(page_id):
     cursor.execute('SELECT content, user_id FROM submissions WHERE page_id = ?', (page_id,))
     return cursor.fetchall()
     
-
 def get_annotation(page_id):
     cursor.execute('SELECT tags FROM annotations WHERE page_id = ?', (page_id,))
     return get_row("No annotation for page: %s" % page_id)[0]
+
+def add_annotation(page_id, tags):
+    tags = " ".join([str(int(i)) for i in tags])
+    cursor.execute('INSERT INTO annotations (page_id, tags) VALUES (?, ?)', (page_id, tags,))
 
 
 if __name__ == '__main__':
