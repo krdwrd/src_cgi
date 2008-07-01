@@ -116,7 +116,7 @@ def del_all_submissions(user_id, corpus_id):
     cursor.execute('DELETE FROM submissions WHERE user_id = ? AND page_id IN (SELECT id FROM pages WHERE corpus_id = ?)', (user_id, corpus_id,))
 
 def get_subm_content(page_id, user_id):
-    cursor.execute('SELECT content FROM submissions WHERE page_id = ? AND user_id = ?', (page_id, user_id,))
+    cursor.execute('SELECT content FROM submissions WHERE page_id = ? AND user_id = ? ORDER BY id DESC LIMIT 1', (page_id, user_id,))
     return get_row("No such page: %s" % page_id)[0]
 
 def get_all_submissions(page_id):
