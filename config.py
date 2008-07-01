@@ -1,11 +1,11 @@
 import sys, codecs
 sys.stdout = codecs.getwriter('utf8')(sys.stdout)
 
-import cgitb
-cgitb.enable()
-
 from os import environ, umask
 umask(0002)
+
+import kwerror 
+kwerror.enable(logdir="/home/projects/krdwrd/log")
 
 import kwdb
 
