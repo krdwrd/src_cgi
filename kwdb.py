@@ -71,6 +71,9 @@ def get_page_content(page_id):
     cursor.execute('SELECT content FROM pages WHERE id = ?', (page_id,))
     return get_row("No such page: %s" % page_id)[0]
 
+def update_page(page_id, content):
+    cursor.execute("UPDATE pages SET content = ? WHERE id = ?", (content, page_id, ))
+
 def add_user(name):
     cursor.execute('INSERT INTO users (name) VALUES (?)', (name,))
     uid = get_userid(name, False)

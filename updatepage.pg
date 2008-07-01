@@ -1,0 +1,16 @@
+#!/usr/bin/python
+
+import kwdb
+import sys
+from codecs import open
+
+if len(sys.argv) != 3:
+    print "Usage: ./updatepage.py page_id content_file"
+    sys.exit(1)
+
+page_id, fname = sys.argv[-2:]
+
+dat = open(fname, 'r', 'utf-8').read()
+kwdb.update_page(page_id, dat)
+
+kwdb.db.commit()
