@@ -2,6 +2,7 @@
 
 import cgi
 import config
+import kwdb
 
 fs = cgi.FieldStorage()
 
@@ -29,6 +30,7 @@ def validate(url, tags):
 if tags and url:
     print "Content-Type: text/plain\n"
     v = validate(url, tags)
-    print " ".join([str(i) for i in v])
+    res = " ".join([str(i) for i in v])
+    print res,
 else:
     print "Status: 500\n"
