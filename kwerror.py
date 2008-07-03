@@ -1,9 +1,13 @@
 import sys
 
+"""
+this is a stripped down version of the stdlib cgitb module
+"""
+
 class Hook:
 
     def __init__(self, logdir=None):
-        self.logdir = logdir            # log tracebacks to files if not None
+        self.logdir = logdir
 
     def __call__(self, etype, evalue, etb):
         self.handle((etype, evalue, etb))
@@ -30,8 +34,5 @@ handler = Hook().handle
 
 def enable(logdir=None):
     """Install an exception handler that formats tracebacks as HTML.
-
-    The optional argument 'display' can be set to 0 to suppress sending the
-    traceback to the browser, and 'logdir' can be set to a directory to cause
-    tracebacks to be written to files there."""
+    Create log files in ``logdir''"""
     sys.excepthook = Hook(logdir=logdir)
