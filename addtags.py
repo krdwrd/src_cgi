@@ -12,5 +12,6 @@ page_id, fname = sys.argv[-2:]
 
 fl = [f.strip() for f in file(fname).readlines()]
 
+kwdb.del_annotation(page_id)
 kwdb.add_annotation(page_id, fl)
 kwdb.db.commit()

@@ -91,7 +91,12 @@ def get_userid(name, create=True):
     return res[0][0]
 
 def pages_left(corpus_id, user_id):
-    cursor.execute('SELECT id FROM pages WHERE corpus_id = ? AND NOT id IN (SELECT page_id FROM submissions WHERE user_id = ?) ORDER BY id', (corpus_id, user_id,))
+    cursor.execute("""
+    SELECT page_id, COUNT(DISTINCT user_id) as c FROM submissions 
+    LEFT OUTER JOIN pages ON page_id = pages.id where pages.corpus_id = ? AND NOT pages.id IN
+    (SELECT page_id FROM submissions WHERE user_id = ?) 
+    GROUP BY pages.id ORDER BY c ASC LIMIT 10;""", (corpus_id, user_id,))
+#    cursor.execute('SELECT id FROM pages WHERE corpus_id = ? AND NOT id IN (SELECT page_id FROM submissions WHERE user_id = ?) ORDER BY id', (corpus_id, user_id,))
     return [i[0] for i in cursor.fetchall()]
 
 def count_pages_done(corpus_id, user_id):
@@ -131,6 +136,8 @@ def add_annotation(page_id, tags):
     tags = " ".join([str(int(i)) for i in tags])
     cursor.execute('INSERT INTO annotations (page_id, tags) VALUES (?, ?)', (page_id, tags,))
 
+def del_annotation(page_id):
+    cursor.execute('DELETE FROM annotations WHERE page_id = ?', (page_id, ))
 
 if __name__ == '__main__':
     initdb()
