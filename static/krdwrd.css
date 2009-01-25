@@ -19,6 +19,15 @@ body {
   width: 30em;
 }
 
+.stats_table {
+  margin-top: 1em;
+  border-spacing: 1em 0;
+}
+
+tr {
+  font: message-box;
+}
+
 ul {
   margin: 0;
   -moz-margin-start: 1.5em;
