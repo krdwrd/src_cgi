@@ -103,16 +103,16 @@ def count_pages_done(corpus_id, user_id):
     cursor.execute('SELECT COUNT(id) FROM pages WHERE corpus_id = ? AND id IN (SELECT page_id FROM submissions WHERE user_id = ?)', (corpus_id, user_id,))
     return get_row("Error counting pages left")[0]
 
-def count_pages_done_incorpus(corpus_id):
-    cursor.execute('SELECT COUNT(*) FROM (SELECT page_id,user_id FROM submissions WHERE page_id IN (SELECT id FROM pages WHERE corpus_id = ?) GROUP BY user_id,page_id)', (corpus_id,))
+def count_pages_done_incorpus(corpus_id, min_user_id=5):
+    cursor.execute('SELECT COUNT(*) FROM (SELECT page_id, user_id FROM submissions WHERE user_id >= ? AND page_id IN (SELECT id FROM pages WHERE corpus_id = ?) GROUP BY user_id, page_id)', (min_user_id, corpus_id,))
     return get_row("Error counting pages")[0]
 
 def pages_done(corpus_id, user_id):
     cursor.execute('SELECT page_id, added FROM submissions WHERE user_id = ? AND page_id in (SELECT id FROM pages WHERE corpus_id = ?) ORDER BY added', (user_id, corpus_id,))
     return cursor.fetchall()
 
-def pages_done_incorpus(corpus_id):
-    cursor.execute('SELECT DISTINCT page_id FROM submissions WHERE page_id IN (SELECT id FROM pages WHERE corpus_id = ?)', (corpus_id,))
+def pages_done_incorpus(corpus_id, min_user_id=5):
+    cursor.execute('SELECT DISTINCT page_id FROM submissions WHERE user_id >= min_user_id AND page_id IN (SELECT id FROM pages WHERE corpus_id = ?)', (corpus_id,))
     return cursor.fetchall()
 
 def pages_incorpus(corpus_id):
@@ -123,8 +123,8 @@ def count_pages_corpus(corpus_id):
     cursor.execute('SELECT COUNT(id) FROM pages WHERE corpus_id = ?', (corpus_id,))
     return get_row("Error counting corpus pages.")[0]
 
-def count_users_incorpus(corpus_id):
-    cursor.execute('SELECT COUNT(DISTINCT user_id) FROM submissions WHERE page_id IN (SELECT id FROM pages WHERE corpus_id = ?)', (corpus_id,))
+def count_users_incorpus(corpus_id, min_user_id=5):
+    cursor.execute('SELECT COUNT(DISTINCT user_id) FROM submissions WHERE user_id >= ? AND page_id IN (SELECT id FROM pages WHERE corpus_id = ?)', (min_user_id, corpus_id,))
     return get_row("Error counting users per corpus.")[0]
     
 def add_submission(user_id, page_id, content):
@@ -144,6 +144,10 @@ def get_all_submissions(page_id):
     cursor.execute('SELECT content, user_id FROM submissions WHERE page_id = ?', (page_id,))
     return cursor.fetchall()
     
+def get_submissions_incorpus(corpus_id,min_user_id=5):
+    cursor.execute('SELECT DISTINCT * FROM (SELECT page_id, user_id FROM submissions WHERE user_id >= ? AND page_id IN (SELECT id FROM pages WHERE corpus_id = ?) ORDER BY page_id, user_id)', (min_user_id,corpus_id,))
+    return cursor.fetchall()
+
 def get_annotation(page_id):
     cursor.execute('SELECT tags FROM annotations WHERE page_id = ?', (page_id,))
     return get_row("No annotation for page: %s" % page_id)[0]
