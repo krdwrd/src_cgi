@@ -20,7 +20,8 @@ def initdb():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         corpus_id INTEGER,
         url TEXT UNIQUE,
-        content TEXT
+        content TEXT,
+        mime DEFAULT "text/html"
     );""","""
     CREATE TABLE submissions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -60,8 +61,8 @@ def get_corpora():
     cursor.execute('SELECT id, name FROM corpora WHERE active = 1')
     return cursor.fetchall()
 
-def add_page(corpus_id, url, content):
-    cursor.execute('INSERT INTO pages (corpus_id, url, content) VALUES (?, ?, ?)', (corpus_id, url, content,))
+def add_page(corpus_id, url, content, mime):
+    cursor.execute('INSERT INTO pages (corpus_id, url, content, mime) VALUES (?, ?, ?, ?)', (corpus_id, url, content, mime,))
 
 def get_page(page_id):
     cursor.execute('SELECT * FROM pages WHERE id = ?', (page_id,))
@@ -69,6 +70,10 @@ def get_page(page_id):
 
 def get_page_content(page_id):
     cursor.execute('SELECT content FROM pages WHERE id = ?', (page_id,))
+    return get_row("No such page: %s" % page_id)[0]
+
+def get_page_mime(page_id):
+    cursor.execute('SELECT mime FROM pages WHERE id = ?', (page_id,))
     return get_row("No such page: %s" % page_id)[0]
 
 def update_page(page_id, content):
@@ -111,8 +116,8 @@ def pages_done(corpus_id, user_id):
     cursor.execute('SELECT page_id, added FROM submissions WHERE user_id = ? AND page_id in (SELECT id FROM pages WHERE corpus_id = ?) ORDER BY added', (user_id, corpus_id,))
     return cursor.fetchall()
 
-def pages_done_incorpus(corpus_id, min_user_id=5):
-    cursor.execute('SELECT DISTINCT page_id FROM submissions WHERE user_id >= min_user_id AND page_id IN (SELECT id FROM pages WHERE corpus_id = ?)', (corpus_id,))
+def pages_done_incorpus(corpus_id):
+    cursor.execute('SELECT DISTINCT page_id, user_id FROM submissions WHERE page_id IN (SELECT id FROM pages WHERE corpus_id = ?)', (corpus_id,))
     return cursor.fetchall()
 
 def pages_incorpus(corpus_id):
@@ -158,6 +163,10 @@ def add_annotation(page_id, tags):
 
 def del_annotation(page_id):
     cursor.execute('DELETE FROM annotations WHERE page_id = ?', (page_id, ))
+
+def get_submissionstats_incorpus(corpus_id, min_user_id=5): 
+    cursor.execute('SELECT page_id,user_id,strftime("%s", added, "localtime") from submissions WHERE user_id >= ? AND page_id IN (SELECT id FROM pages WHERE corpus_id = ?)', (min_user_id, corpus_id,))
+    return cursor.fetchall()
 
 if __name__ == '__main__':
     initdb()
