@@ -20,7 +20,11 @@ for corpus_id, corpus in corpora:
     all = kwdb.count_pages_corpus(corpus_id)
     submissions = kwdb.count_pages_done_incorpus(corpus_id, min_user_id) 
     users = kwdb.count_users_incorpus(corpus_id, min_user_id)
-    subs_per_user = int(submissions / users)
+    if users > 0:
+        subs_per_user = int(submissions / users)
+    else:
+        subs_per_user = 0
+
     print """<tr><td>"""
     print """<a href="#%s">%s</a> : """ % (corpus, corpus,)
     print """</td><td align="right">"""
@@ -38,8 +42,8 @@ for corpus_id, corpus in corpora:
     print """<div class="corpus"><a name="%s"></a><span class="shead">%s</span>""" % (corpus, corpus)
     pages = kwdb.pages_incorpus(corpus_id)
     pages_done_user = [i[0] for i in kwdb.pages_done(corpus_id, config.user)] 
-    # pages_done = [i[0] for i in kwdb.pages_done_incorpus(corpus_id)]
-    pages_done = kwdb.get_submissions_incorpus(corpus_id, min_user_id)
+    pages_done = kwdb.pages_done_incorpus(corpus_id)
+    # pages_done = kwdb.get_submissions_incorpus(corpus_id, min_user_id)
     submissions_dict = {} 
 
     for k,v in pages_done:
@@ -49,7 +53,7 @@ for corpus_id, corpus in corpora:
         print """<br/>"""
         print """<table>"""
 
-        for id, url in reversed(pages):
+        for id, url in pages:
             fresh = "%s/view/%s\n" % (config.baseurl, id, )
     	    print """<tr><td>%04d</td><td style="white-space: nowrap;"><a href="%s">original</a> """ % (id, fresh) 
 
@@ -61,22 +65,24 @@ for corpus_id, corpus in corpora:
 
             print """ <a href="%s">URL</a> |""" % (url) 
 
-            if submissions_dict[id]:
+            try:
+                submissions = submissions_dict[id]
                 merged = "%s/dat/%s/merged/%s.html" % (config.baseurl[:-4], corpus, id)
-                print """ <a href="%s">merged</a> (%d):</td></tr> """ % (merged, len(submissions_dict[id]))
+                print """ <a href="%s">merged</a> (%d):</td></tr> """ % (merged, len(submissions))
 
                 print """<tr><td><td /><table><tr>"""
                 tmp = 0
                 for dict_id in submissions_dict[id]:
                     tmp += 1
+                    submits = "%s/subm/%s/%s" % (config.baseurl, id, dict_id) 
                     if (tmp == 15): 
                         print """<td>...</td>"""
                     elif (tmp > 15): 
                         continue
                     else:
-                        print """<td align="right"> %3d </td>""" % (dict_id) 
-            else:
-                print """</td></tr>"""
+                        print """<td align="right"><a href="%s">%3d</a></td>""" % (submits, dict_id) 
+            except KeyError:
+                print """</td></tr><tr><td><td /><table><tr>"""
 
             print """</tr></table></td></tr>"""
 
