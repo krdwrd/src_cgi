@@ -21,7 +21,10 @@ def initdb():
         corpus_id INTEGER,
         url TEXT UNIQUE,
         content TEXT,
-        mime DEFAULT "text/html"
+        mime DEFAULT "text/html",
+        wclines INTEGER,
+        wcwords INTEGER,
+        wcbytes INTEGER
     );""","""
     CREATE TABLE submissions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -61,8 +64,8 @@ def get_corpora():
     cursor.execute('SELECT id, name FROM corpora WHERE active = 1')
     return cursor.fetchall()
 
-def add_page(corpus_id, url, content, mime):
-    cursor.execute('INSERT INTO pages (corpus_id, url, content, mime) VALUES (?, ?, ?, ?)', (corpus_id, url, content, mime,))
+def add_page(corpus_id, url, content, mime, wclines, wcwords, wcbytes):
+    cursor.execute('INSERT INTO pages (corpus_id, url, content, mime, wclines, wcwords, wcbytes) VALUES (?, ?, ?, ?, ?, ?, ?)', (corpus_id, url, content, mime, wclines, wcwords, wcbytes,))
 
 def get_page(page_id):
     cursor.execute('SELECT * FROM pages WHERE id = ?', (page_id,))
@@ -96,12 +99,12 @@ def get_userid(name, create=True):
     return res[0][0]
 
 def pages_left(corpus_id, user_id):
-    cursor.execute("""
-    SELECT page_id, COUNT(DISTINCT user_id) as c FROM submissions 
-    LEFT OUTER JOIN pages ON page_id = pages.id where pages.corpus_id = ? AND NOT pages.id IN
-    (SELECT page_id FROM submissions WHERE user_id = ?) 
-    GROUP BY pages.id ORDER BY c ASC LIMIT 10;""", (corpus_id, user_id,))
-#    cursor.execute('SELECT id FROM pages WHERE corpus_id = ? AND NOT id IN (SELECT page_id FROM submissions WHERE user_id = ?) ORDER BY id', (corpus_id, user_id,))
+#    cursor.execute("""
+#    SELECT page_id, COUNT(DISTINCT user_id) as c FROM submissions 
+#    LEFT OUTER JOIN pages ON page_id = pages.id where pages.corpus_id = ? AND NOT pages.id IN
+#    (SELECT page_id FROM submissions WHERE user_id = ?) 
+#    GROUP BY pages.id ORDER BY c ASC LIMIT 10;""", (corpus_id, user_id,))
+    cursor.execute('SELECT id FROM pages WHERE corpus_id = ? AND NOT id IN (SELECT page_id FROM submissions WHERE user_id = ?) ORDER BY id', (corpus_id, user_id,))
     return [i[0] for i in cursor.fetchall()]
 
 def count_pages_done(corpus_id, user_id):
@@ -144,6 +147,10 @@ def del_all_submissions(user_id, corpus_id):
 def get_subm_content(page_id, user_id):
     cursor.execute('SELECT content FROM submissions WHERE page_id = ? AND user_id = ? ORDER BY id DESC LIMIT 1', (page_id, user_id,))
     return get_row("No such page: %s" % page_id)[0]
+
+def get_subm_uids(page_id, min_user_id=5):
+    cursor.execute('SELECT DISTINCT user_id FROM submissions WHERE user_id >= ? AND page_id = ? ORDER BY user_id', (min_user_id, page_id,))
+    return cursor.fetchall() 
 
 def get_all_submissions(page_id):
     cursor.execute('SELECT content, user_id FROM submissions WHERE page_id = ?', (page_id,))
