@@ -51,10 +51,15 @@ for corpus_id, corpus in corpora:
     if pages:
       print """(<a href="delcorpus/%d"  onclick="return del_corpus('%s');">delete all</a>) <br/>""" % (corpus_id, corpus,  )
       print "<ul>"
-      for page_id, added in reversed(pages):
+      while len(pages) > 0:
+        page_id, added = pages.pop()
+        submits = 1
+        while len(pages) > 0 and pages[len(pages)-1][0] == page_id: 
+          submits += 1
+          pages.pop()
         fresh = "%s/view/%s\n" % (config.baseurl, page_id, )
         subm = "%s/subm/%s\n" % (config.baseurl, page_id, )
-        print """<li> %04d %s <a href="%s">original</a> <a href="%s">mine</a> """ % (page_id, added, fresh, subm) 
+        print """<li> %04d %s <a href="%s">original</a> <a href="%s/%s">mine/%s</a> """ % (page_id, added, fresh, subm, config.user, submits) 
         print """ (<a href="delpage/%d" onclick="return del_page('%s');">delete</a>)""" % (page_id, page_id, )
       print "</ul>"
     else:

@@ -57,7 +57,7 @@ for corpus_id, corpus in corpora:
     	    print """<tr><td>%04d</td><td style="white-space: nowrap;"><a href="%s">original</a> """ % (id, fresh) 
 
             if id in pages_done_user:
-                mine = "%s/subm/%s\n" % (config.baseurl, id, )
+                mine = "%s/subm/%s/%s\n" % (config.baseurl, id, config.user, )
                 print """<a href="%s">mine</a>""" % (mine) 
             else:
                 print """-"""
