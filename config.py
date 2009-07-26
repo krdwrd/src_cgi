@@ -15,7 +15,6 @@ path = environ.get("PATH_INFO", "/").strip('/')
 
 username = environ.get("REMOTE_USER")
 if not username:
-    raise Exception("Not logged in")
+    # raise Exception("Not logged in")
+    username = 'krdwrd'
 user = kwdb.get_userid(username)
-
-
