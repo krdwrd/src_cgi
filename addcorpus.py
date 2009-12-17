@@ -19,8 +19,11 @@ else:
 
 fl = file(files).readlines()
 
-cid = kwdb.add_corpus(name)
-
+try:
+    cid = kwdb.get_corpus(name)
+except:
+    cid = kwdb.add_corpus(name)
+    
 for f in fl:
     url, fname = f.split()
     wclines, wcwords, wcbytes, name = (os.popen('wc '+re.sub('\.[A-Za-z]+','.txt',fname), 'r').read()).split()
