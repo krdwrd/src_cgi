@@ -65,7 +65,11 @@ def get_corpora():
     return cursor.fetchall()
 
 def add_page(corpus_id, url, content, mime, wclines, wcwords, wcbytes):
-    cursor.execute('INSERT INTO pages (corpus_id, url, content, mime, wclines, wcwords, wcbytes) VALUES (?, ?, ?, ?, ?, ?, ?)', (corpus_id, url, content, mime, wclines, wcwords, wcbytes,))
+    try:
+        cursor.execute('INSERT INTO pages (corpus_id, url, content, mime, wclines, wcwords, wcbytes) VALUES (?, ?, ?, ?, ?, ?, ?)', (corpus_id, url, content, mime, wclines, wcwords, wcbytes,))
+    except sqlite.Error, e:
+        print "SQLite error:", e.args[0], "at URL: ",url
+        raise
 
 def get_page(page_id):
     cursor.execute('SELECT * FROM pages WHERE id = ?', (page_id,))
