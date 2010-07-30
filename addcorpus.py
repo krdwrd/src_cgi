@@ -26,9 +26,14 @@ except:
     
 for f in fl:
     url, fname = f.split()
-    wclines, wcwords, wcbytes, name = (os.popen('wc '+re.sub('\.[A-Za-z]+','.txt',fname), 'r').read()).split()
     dat = open(fname, 'r', 'utf-8').read()
-    #kwdb.add_page(cid, url, dat, mime)
+    wclines = wcwords = wcbytes = -1
+
+    try:
+        wclines, wcwords, wcbytes, name = (os.popen('wc '+re.sub('\.[A-Za-z]+','.txt',fname), 'r').read()).split()
+    except:
+        pass
+
     kwdb.add_page(cid, url, dat, mime, wclines, wcwords, wcbytes)
 
 kwdb.db.commit()
