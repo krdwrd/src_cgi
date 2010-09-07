@@ -11,13 +11,13 @@ url = fs.getfirst("url")
 def sweep(url):
     page = int(url.rsplit('/', 1)[1])
 
-    #silver = kwdb.get_annotation(page)
+    silver = kwdb.get_annotation(page)
 
     ###
     # dummy output:
-    silver = ''
-    for i in range(2000):
-        silver += "2 " 
+    #silver = ''
+    #for i in range(2000):
+    #    silver += "2 " 
     ###
 
     return silver.split()
