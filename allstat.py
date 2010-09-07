@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import kwdb
 import config
+import os.path
 
 corpora = kwdb.get_corpora()
 min_user_id = 5
@@ -54,7 +55,7 @@ for corpus_id, corpus in corpora:
 
         for id, url in pages:
             fresh = "%s/view/%s\n" % (config.baseurl, id, )
-    	    print """<tr><td>%04d</td><td style="white-space: nowrap;"><a href="%s">original</a> """ % (id, fresh) 
+            print """<tr><td>%04d</td><td style="white-space: nowrap;"><a href="%s">original</a> """ % (id, fresh) 
 
             if id in pages_done_user:
                 mine = "%s/subm/%s/%s\n" % (config.baseurl, id, config.user, )
@@ -67,7 +68,9 @@ for corpus_id, corpus in corpora:
             try:
                 submissions = submissions_dict[id]
                 merged = "%s/dat/%s/merged/%s" % (config.baseurl[:-4], corpus, id)
-                print """ <a href="%s">merged</a> (%d):</td></tr> """ % (merged, len(submissions))
+                if os.path.exists("../dat/" + corpus + "/merged/" + str(id)):
+                    print """ <a href="%s">merged</a> (%d): """ % (merged, len(submissions))
+                print """ </td></tr> """
 
                 print """<tr><td><td /><table><tr>"""
                 tmp = 0
