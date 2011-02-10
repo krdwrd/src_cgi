@@ -11,14 +11,15 @@ def initdb():
         url TEXT UNIQUE
     );""","""
     CREATE TABLE attempts (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY,
         page_id INTEGER UNIQUE,
         times INTEGER
     );""","""
     CREATE TABLE harvests (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         url TEXT UNIQUE,
-        words INTEGER,
+        chars INTEGER,
+        btetoks INTEGER,
         added REAL DEFAULT CURRENT_TIMESTAMP
     );""",)
 
@@ -54,12 +55,20 @@ def next_page():
 def attempt_page(page_id):
     cursor.execute('REPLACE INTO attempts (page_id, times) VALUES (?, IFNULL ((SELECT times FROM attempts WHERE page_id=?)+1, 1) )',  (page_id,page_id,))
 
-def add_harvest(url, words):
+def add_harvest(url, chars, btetoks):
     try:
-        cursor.execute('INSERT INTO harvests (url,words) VALUES (?,?)', (url, words, ))
+        cursor.execute('INSERT INTO harvests (url,chars,btetoks) VALUES (?,?)', (url, chars, btetoks, ))
     except sqlite.Error, e:
         # this might happen when URL already exists - we don't care
         pass
+
+def get_harvests_done():
+    cursor.execute('select COUNT(*) from harvests')
+    return cursor.fetchone()[0]
+
+def get_attempts_done():
+    cursor.execute('select COUNT(*) from attempts')
+    return cursor.fetchone()[0]
 
 def changes():
     return db.total_changes

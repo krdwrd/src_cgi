@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 import sys
 sys.path.append('/home/projects/krdwrd/trunk/src/cgi')
 import harvestdb as hwdb
@@ -5,14 +7,20 @@ import harvestdb as hwdb
 import mutex
 mu = mutex.mutex()
 
+import threading
+lock = threading.Lock()
+
 from collections import deque
 pages = deque() 
 attempts = deque()
 harvests = deque()
+
+attempts_done = int()
+harvests_done = int()
 batchsize = 2500
 
 def application(environ, start_response):
-    global pages,attempts,harvests,batchsize
+    global pages,attempts,harvests,batchsize,attempts_done,harvests_done
 
     path = environ['PATH_INFO']
     method = environ['REQUEST_METHOD']
@@ -36,16 +44,17 @@ def application(environ, start_response):
         )
         page_id = post.getfirst("page_id")
         url = post.getfirst("url")
-        words = post.getfirst("words")
+        chars = post.getfirst("chars")
+        btetoks = post.getfirst("btetoks")
 
-        put_harvest(page_id,url,words)
+        put_harvest(page_id,url,chars,btetoks)
 
         start_response('201 OK', [])
         return [] 
 
     elif path == '/info' and method == 'GET':
         start_response('200 OK', [('content-type', 'text/plain')])
-        return ("bs:"+str(batchsize)+", atmpts:"+str(len(attempts))+", hrvsts:"+str(len(harvests))+", pgs:"+str(len(pages))+"\n")
+        return ("bs:"+str(batchsize)+", atmpts:"+str(len(attempts))+", hrvsts:"+str(len(harvests))+"\n"+str(attempts_done)+" "+str(harvests_done)+"\n")
         # +str([str(i)+":"+str(j) for i,j in pages]))
 
     elif path == '/commit' and method == 'GET':
@@ -82,23 +91,35 @@ def get_page():
             return get_page()
             
 def put_attempt(page_id):
-    global attempts
+    global attempts,attempts_done,lock
     attempts.append(page_id)
+    with lock:
+        attempts_done += 1
 
 def put_attempts():
     global attempts
     while attempts:
         hwdb.attempt_page(attempts.pop())
 
-def put_harvest(page_id,url,words):
-    global harvests
-    harvests.append([page_id,url,words])
+def put_harvest(page_id,url,chars,btetoks):
+    global harvests,harvests_done,lock
+    harvests.append([page_id,url,chars,btetoks])
+    with lock:
+        harvests_done += 1
 
 def put_harvests():
     global harvests
     while harvests:
-        page_id,url,words = harvests.pop()
-        hwdb.add_harvest(url,words)
-        hwdb.del_page(page_id) 
-    
+        page_id,url,chars,btetoks = harvests.pop()
+        hwdb.add_harvest(url,chars,btetoks)
+        hwdb.del_page(page_id)
+
+try:    
+    if mu.testandset():
+        attempts_done = int(hwdb.get_attempts_done())
+        harvests_done = int(hwdb.get_harvests_done())
+        get_next_pages()
+finally:
+    mu.unlock()
+
 # vim: filetype=python
